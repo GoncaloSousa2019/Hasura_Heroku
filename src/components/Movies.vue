@@ -137,7 +137,7 @@ export default {
     },
     computed: {
         buttonSave(){
-            if(!this.title != "" && !this.director != "" && !this.release_date != ""){
+            if(!this.title == "" && !this.director == "" && !this.release_date == ""){
                 return true
             }
             else return false
