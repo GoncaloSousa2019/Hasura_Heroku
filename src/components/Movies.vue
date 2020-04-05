@@ -146,7 +146,10 @@ export default {
     apollo:{
         movies:{
             query: GET_MOVIES,
-        }
+            pollInterval: 1000,
+        },
+
+
     },
     methods:{
         crudFunc(modal){
