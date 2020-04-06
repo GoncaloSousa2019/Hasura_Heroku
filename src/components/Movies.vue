@@ -207,7 +207,7 @@ export default {
                 variables:{
                     id: this.idX
                 },
-                refetchQueries: ["getMovies"]
+              //  refetchQueries: ["getMovies"]
             }).then(res =>{
                 console.log("Registo Eliminados com successo com o id: ",res)
                 this.hide(modal)
@@ -227,7 +227,7 @@ export default {
                     composer: this.composer,
                     release_date: this.release_date,
                 },
-                refetchQueries: ["getMovies"] //Atualiza os dados na tabela
+              //  refetchQueries: ["getMovies"] //Atualiza os dados na tabela
             }).then( res => {
                 console.log("Registo Editado com successo: ",res)
                 this.hide(modal)
@@ -247,7 +247,7 @@ export default {
                     composer: this.composer,
                     release_date: this.release_date,
                 },
-                refetchQueries: ["getMovies"]
+               // refetchQueries: ["getMovies"]
             }).then(res =>{
                 console.log("Registo Criado com successo com o id: ",res.data.insert_movies.returning[0].id)
                 this.hide(modal)
