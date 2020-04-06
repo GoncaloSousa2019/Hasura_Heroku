@@ -51,6 +51,18 @@ const GET_MOVIES = gql`
     query getMovies {
         movies { id, title, director, composer, release_date}
     }
+` 
+
+const SUBSCRIPTION_GET_MOVIES = gql`
+    subscription getMovies{
+        movies(order_by: {title:asc}){
+            id
+            title
+            director
+            composer
+            release_date
+  }
+}
 `
 const ADD_MOVIE = gql`
     mutation addMovie(
@@ -132,22 +144,35 @@ export default {
             formDisabled:"",
             buttonText:"",
             buttonColor:"",
-            titleText:""
+            titleText:"",
+
+            movies:[],
         }
     },
     computed: {
         buttonSave(){
-            if(!this.title == "" && !this.director == "" && !this.release_date == ""){
+            if(!this.title == "" && !this.director == "" && !this.release_date == "" && !this.composer == ""){
                 return true
             }
             else return false
         },
     },
     apollo:{
-        movies:{
+/*         movies:{
             query: GET_MOVIES,
-            pollInterval: 1000,
+            //pollInterval: 1000, //Faz uma chamada a BD a cada segundo
         },
+ */
+        $subscribe: {
+                movies: {
+                    query: SUBSCRIPTION_GET_MOVIES,
+                    result(data) {
+                        console.log("DATA...........",data)
+                        this.movies = data.data.movies
+                    }
+                }
+            }
+
 
 
     },
@@ -183,13 +208,16 @@ export default {
                     id: this.idX
                 },
                 refetchQueries: ["getMovies"]
+            }).then(res =>{
+                console.log("Registo Eliminados com successo com o id: ",res)
+                this.hide(modal)
+            }).catch(err =>{
+                console.log(err)
             })
-            console.log("Registos Eliminados: ", res)
-            this.hide(modal)
         },
         edit(modal){
             
-            let res = this.$apollo
+            this.$apollo
             .mutate({
                 mutation: EDIT_MOVIES,
                 variables:{
@@ -199,17 +227,19 @@ export default {
                     composer: this.composer,
                     release_date: this.release_date,
                 },
-                refetchQueries: ["getMovies"]
-            }).then(
-                console.log("ERRO")
-            )
+                refetchQueries: ["getMovies"] //Atualiza os dados na tabela
+            }).then( res => {
+                console.log("Registo Editado com successo: ",res)
+                this.hide(modal)
+            }).catch( err => {
+                console.log(err)
+            })
             
             
-            //console.log("Registos Editados: ", res)
-            this.hide(modal)
         },
         create(modal){
-            let res = this.$apollo.mutate({
+            this.$apollo
+            .mutate({
                 mutation: ADD_MOVIE,
                 variables: {
                     title: this.title,
@@ -218,9 +248,13 @@ export default {
                     release_date: this.release_date,
                 },
                 refetchQueries: ["getMovies"]
+            }).then(res =>{
+                console.log("Registo Criado com successo com o id: ",res.data.insert_movies.returning[0].id)
+                this.hide(modal)
+            }).catch(err =>{
+                console.log(err)
             })
-            console.log("Registo Criado: ", res)
-            this.hide(modal)
+
         },
         hide(modal){
             this.$refs[modal].hide();
