@@ -1,8 +1,13 @@
 <template>
     <b-container fluid>
+        <h4>Qty of Movies: {{qtyMovieC}}</h4>
         <h1>Movies</h1>
+        <div v-if="$apollo.loading">Loading...</div>
         <b-button @click="initialModal('', titleText='Creating')" v-b-modal.crudByModal class="m-2" variant="primary">Create Movie</b-button>
-        <b-list-group>
+        <b-table :items = "movies">
+
+        </b-table>
+        <!-- <b-list-group>
                 <b-row class="m-2 h5 p-2 bg-info">
                     <b-col>Buttons</b-col>
                     <b-col>Title</b-col>
@@ -28,7 +33,7 @@
                     <b-col>{{movie.composer}} </b-col>
                 </b-row>
             </b-list-group-item>
-        </b-list-group>
+        </b-list-group> -->
         <b-modal id="crudByModal" ref="crudByModal" hide-header hide-footer no-close-on-esc no-close-on-backdrop>
             <b-card :title="titleText+' A Movie'">
                 <b-form-group class="m-2">
@@ -46,12 +51,13 @@
 
 <script>
 import gql from 'graphql-tag'
-
+/*
 const GET_MOVIES = gql`
     query getMovies {
         movies { id, title, director, composer, release_date}
     }
 ` 
+*/
 
 const SUBSCRIPTION_GET_MOVIES = gql`
     subscription getMovies{
@@ -147,6 +153,7 @@ export default {
             titleText:"",
 
             movies:[],
+            loading:0,
         }
     },
     computed: {
@@ -156,6 +163,9 @@ export default {
             }
             else return false
         },
+        qtyMovieC(){
+            return this.movies.length;
+        }
     },
     apollo:{
 /*         movies:{
@@ -166,12 +176,12 @@ export default {
         $subscribe: {
                 movies: {
                     query: SUBSCRIPTION_GET_MOVIES,
-                    result(data) {
-                        console.log("DATA...........",data)
-                        this.movies = data.data.movies
+                    result({data}) {
+                        //console.log("DATA...........",data)
+                        this.movies = data.movies
                     }
                 }
-            }
+        }
 
 
 
